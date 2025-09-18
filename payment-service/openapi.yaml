@@ -1,0 +1,45 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Payment Service",
+    "version": "1.0.0",
+    "description": "Payment API for booking transactions"
+  },
+  "servers": [
+    {
+      "url": "https://api.kong-air.com"
+    }
+  ],
+  "paths": {
+    "/payments": {
+      "post": {
+        "summary": "Process payment",
+        "operationId": "pay",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "booking_id": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment successful"
+          }
+        },
+        "x-kong-name": "process-payment"
+      }
+    }
+  },
+  "x-kong-name": "payment-service"
+}
