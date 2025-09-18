@@ -1,0 +1,6 @@
+plugins:
+- name: jwt
+  service: payment-service
+  config:
+    key_claim_name: sub
+    secret_is_base64: false
