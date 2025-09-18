@@ -1,0 +1,124 @@
+_format_version: "3.0"
+consumers:
+- username: jsmith
+- username: jdoe
+plugins:
+- config:
+    hour: 2000
+    policy: local
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000
+      tls:
+        enabled: false
+    second: 10
+  name: rate-limiting
+- config:
+    key_claim_name: iss
+    secret_is_base64: false
+  name: jwt
+  service: flight-service
+  tags:
+  - flight-service
+- config:
+    key_names:
+    - apikey
+  name: key-auth
+  service: flight-service
+  tags:
+  - flight-service
+- config:
+    key_claim_name: sub
+    secret_is_base64: false
+  name: jwt
+  service: payment-service
+  tags:
+  - payment-service
+services:
+- host: api.kong-air.com
+  id: c89d5f47-9e4a-553a-910e-ff1a78bb3015
+  name: booking-service
+  path: /
+  plugins: []
+  port: 443
+  protocol: https
+  routes:
+  - id: f63684ac-f2a9-5c18-b9be-85bf70b3f1ae
+    methods:
+    - GET
+    name: booking-service_bookings_list-bookings
+    paths:
+    - ~/bookings$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags:
+    - booking-service
+  - id: 21ca3544-a0a5-527f-9c0a-5c5387fa2532
+    methods:
+    - POST
+    name: booking-service_bookings_create-booking
+    paths:
+    - ~/bookings$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags:
+    - booking-service
+  tags:
+  - booking-service
+- host: api.kong-air.com
+  id: 25ddab64-d40d-531a-8efd-eac92cc1f077
+  name: flight-service
+  path: /
+  plugins: []
+  port: 443
+  protocol: https
+  routes:
+  - id: aa2f66a5-5182-5051-8995-9515913eaed8
+    methods:
+    - GET
+    name: flight-service_flights_get-all-flights
+    paths:
+    - ~/flights$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags:
+    - flight-service
+  - id: 2f6fe101-8daa-5a90-97c5-6d56aaa0265c
+    methods:
+    - GET
+    name: flight-service_flights-flight-id_get-flight-details
+    paths:
+    - ~/flights/(?<flight_id>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags:
+    - flight-service
+  tags:
+  - flight-service
+- host: api.kong-air.com
+  id: 5bac12d2-3613-5ecc-b793-9d88545ea158
+  name: payment-service
+  path: /
+  plugins: []
+  port: 443
+  protocol: https
+  routes:
+  - id: a4ab5a27-6f2d-5882-8186-51ea50b25ef4
+    methods:
+    - POST
+    name: payment-service_payments_process-payment
+    paths:
+    - ~/payments$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags:
+    - payment-service
+  tags:
+  - payment-service
+upstreams: []
